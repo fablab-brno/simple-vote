@@ -18,3 +18,5 @@ services:
       SIMPLEVOTE_DB_URL: "jdbc:postgresql://simple_vote_db/simplevote"
       SIMPLEVOTE_DB_USERNAME: "postgres"
       SIMPLEVOTE_DB_PASSWORD: "example"
+      MTM_API_URL: "https://mtm.fablabbrno.cz/api/v4/"
+      FABMAN_API_URL: "https://fabman.io/api/v1/"

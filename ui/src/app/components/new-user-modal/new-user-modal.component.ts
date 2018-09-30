@@ -17,7 +17,7 @@ export class NewUserModalComponent implements OnInit {
 	@ViewChild('smModal') private smModal: ModalDirective;
 	@Output() userCreated = new EventEmitter();
 
-	public showLoginModal: boolean = false;
+	public showLoginModal: boolean = true;
 
 	public name: string;
 

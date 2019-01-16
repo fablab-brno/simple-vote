@@ -1,10 +1,14 @@
 package com.simplevote.db;
 
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 import com.auth0.jwt.JWT;
+import com.simplevote.api.FabManAPI;
+import com.simplevote.api.MtmAPI;
 import com.simplevote.tools.Tools;
 import com.simplevote.types.QuestionType;
 import com.simplevote.types.User;
@@ -25,7 +29,7 @@ public class Actions {
 
 
     public static User createNewSimpleUser(String name) {
-        Tables.User user = Tables.User.createIt("name", name);
+        Tables.User user = Tables.User.createIt("name", name.split("@")[0]);
         return createUserObj(user, false);
     }
 
@@ -33,25 +37,18 @@ public class Actions {
 
         // Find the user, then create a login for them
 
-        Tables.User dbUser = Tables.User.findFirst("name = ? or email = ?", userOrEmail, userOrEmail);
-
-        if (dbUser == null) {
-            throw new NoSuchElementException("Incorrect user/email");
-        } else {
-
-            String encryptedPassword = dbUser.getString("password_encrypted");
-            Boolean correctPass = Tools.PASS_ENCRYPT.checkPassword(password, encryptedPassword);
-
-            if (correctPass) {
-                return createUserObj(dbUser, true);
-            } else {
-                throw new NoSuchElementException("Incorrect Password");
+        if (callAuthenticationAPIs(userOrEmail, password)) {
+            Tables.User dbUser = Tables.User.findFirst("email = ?", userOrEmail);
+            if (dbUser == null) {
+                dbUser = Tables.User.createIt("email", userOrEmail, "name", userOrEmail.split("@")[0]);
             }
-        }
+            return createUserObj(dbUser, true);
+
+        } else throw new NoSuchElementException("Incorrect login information");
     }
 
     public static User signup(Long loggedInUserId, String userName, String password, String verifyPassword,
-            String email) {
+                              String email) {
 
         if (email != null && email.equals("")) {
             email = null;
@@ -62,9 +59,9 @@ public class Actions {
         }
 
         // Find the user, then create a login for them
-        
+
         LazyList<Tables.User> users;
-		if (email != null) {
+        if (email != null) {
             users = Tables.User.find("name = ? or email = ?", userName, email);
         } else {
             users = Tables.User.find("name = ?", userName);
@@ -78,7 +75,7 @@ public class Actions {
         } else {
             uv = null;
         }
-        
+
         if (uv == null) {
             // Create the user and full user
             Tables.User user = Tables.User.createIt("name", userName);
@@ -100,6 +97,25 @@ public class Actions {
 
     }
 
+    public static boolean callAuthenticationAPIs(String userOrEmail, String password) {
+        boolean mtmAuth = false;
+        try {
+            mtmAuth = new MtmAPI().validateUser(userOrEmail, password);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Unable to contact Mattermost API", e);
+        }
+
+        boolean fabManAuth = false;
+        try {
+            fabManAuth = new FabManAPI().validateUser(userOrEmail, password);
+        } catch (IOException e) {
+            throw new UncheckedIOException("Unable to contact Fabman API", e);
+        }
+
+
+        return mtmAuth || fabManAuth;
+    }
+
     public static void deleteUser(Long userId) {
         Tables.User.findById(userId).delete();
     }
@@ -113,7 +129,7 @@ public class Actions {
     }
 
     public static Tables.Poll updatePoll(Long pollId, String title, Boolean usersCanAddQuestions,
-            String predefinedUserList) {
+                                         String predefinedUserList) {
         Tables.Poll p = Tables.Poll.findFirst("id = ?", pollId);
         if (title != null)
             p.set("title", title);
@@ -136,7 +152,7 @@ public class Actions {
     }
 
     public static Tables.Question updateQuestion(Long questionId, String title, Long expireTime, Integer threshold,
-            Boolean usersCanAddCandidates, Boolean anonymous, Integer questionTypeId) {
+                                                 Boolean usersCanAddCandidates, Boolean anonymous, Integer questionTypeId) {
         Tables.Question q = Tables.Question.findById(questionId);
 
         // TODO do userCanAddCandidates validation on front end

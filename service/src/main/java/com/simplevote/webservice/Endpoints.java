@@ -43,17 +43,6 @@ public class Endpoints {
 
     public static void user() {
 
-        post("/user", (req, res) -> {
-
-            Map<String, String> vars = Tools.createMapFromReqBody(req.body());
-
-            String name = vars.get("name");
-            User user = Actions.createNewSimpleUser(name);
-
-            return user.getJwt();
-
-        });
-
         post("/login", (req, res) -> {
 
             Map<String, String> vars = Tools.createMapFromReqBody(req.body());
@@ -62,23 +51,6 @@ public class Endpoints {
             String password = vars.get("password");
 
             User userObj = Actions.login(userOrEmail, password);
-
-            return userObj.getJwt();
-
-        });
-
-        post("/signup", (req, res) -> {
-
-            Long userId = (req.headers("token") != null) ? Tools.getUserFromJWTHeader(req).getId() : null;
-
-            Map<String, String> vars = Tools.createMapFromReqBody(req.body());
-
-            String userName = vars.get("username");
-            String password = vars.get("password");
-            String verifyPassword = vars.get("verifyPassword");
-            String email = vars.get("email");
-
-            User userObj = Actions.signup(userId, userName, password, verifyPassword, email);
 
             return userObj.getJwt();
 

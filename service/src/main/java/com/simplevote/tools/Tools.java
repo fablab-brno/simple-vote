@@ -132,15 +132,21 @@ public class Tools {
         Map<String, String> env = System.getenv();
         for (String varName : env.keySet()) {
             switch (varName) {
-            case "SIMPLEVOTE_DB_URL":
-                prop.setProperty("jdbc.url", env.get(varName));
-                break;
-            case "SIMPLEVOTE_DB_USERNAME":
-                prop.setProperty("jdbc.username", env.get(varName));
-                break;
-            case "SIMPLEVOTE_DB_PASSWORD":
-                prop.setProperty("jdbc.password", env.get(varName));
-                break;
+                case "SIMPLEVOTE_DB_URL":
+                    prop.setProperty("jdbc.url", env.get(varName));
+                    break;
+                case "SIMPLEVOTE_DB_USERNAME":
+                    prop.setProperty("jdbc.username", env.get(varName));
+                    break;
+                case "SIMPLEVOTE_DB_PASSWORD":
+                    prop.setProperty("jdbc.password", env.get(varName));
+                    break;
+                case "MTM_API_URL":
+                    prop.setProperty("mattermost.api.url", env.get(varName));
+                    break;
+                case "FABMAN_API_URL":
+                    prop.setProperty("fabman.api.url", env.get(varName));
+                    break;
             }
         }
 

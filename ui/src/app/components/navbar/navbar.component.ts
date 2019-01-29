@@ -1,59 +1,67 @@
-import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
-import { versions } from 'environments/versions';
+import {Component, OnInit} from '@angular/core';
+import {Router, ActivatedRoute} from '@angular/router';
+import {versions} from 'environments/versions';
 
 import {
-	PollService,
-	UserService
+  PollService,
+  UserService
 } from '../../services';
 
-import { ToasterService } from 'angular2-toaster';
+import {ToasterService} from 'angular2-toaster';
 
-import { Tools } from '../../shared';
+import {Tools} from '../../shared';
 
 @Component({
-	selector: 'app-navbar',
-	templateUrl: './navbar.component.html',
-	styleUrls: ['./navbar.component.scss']
+  selector: 'app-navbar',
+  templateUrl: './navbar.component.html',
+  styleUrls: ['./navbar.component.scss']
 })
 export class NavbarComponent implements OnInit {
 
-	public collapseNavbar: boolean = true;
-	public showLoginModal: boolean = false;
+  public collapseNavbar: boolean = true;
+  public showLoginModal: boolean = false;
 
-	public version: string = JSON.stringify(versions, null, 2);
+  public version: string = JSON.stringify(versions, null, 2);
 
-	constructor(public userService: UserService,
-		private pollService: PollService,
-		private route: ActivatedRoute,
-		private router: Router,
-		private toasterService: ToasterService) { }
+  constructor(public userService: UserService,
+              private pollService: PollService,
+              private route: ActivatedRoute,
+              private router: Router,
+              private toasterService: ToasterService) {
+  }
 
-	ngOnInit() {
-	}
+  ngOnInit() {
+    console.log(this.userService.getUser().jwt);
+    if (this.userService.getUser().jwt !== undefined) {
+      console.log(true);
+      this.showLoginModal = false
+    } else {
+      this.showLoginModal = true
+    }
+  }
 
-	toggleCollapseNavbar() {
-		this.collapseNavbar = !this.collapseNavbar;
-	}
+  toggleCollapseNavbar() {
+    this.collapseNavbar = !this.collapseNavbar;
+  }
 
-	createPoll() {
-		this.pollService.createPoll().subscribe(p => {
-			let hashId = Tools.encodeHashId(p.id);
-			this.router.navigate(['/poll', hashId, { editing: true }]);
-		});
-	}
+  createPoll() {
+    this.pollService.createPoll().subscribe(p => {
+      let hashId = Tools.encodeHashId(p.id);
+      this.router.navigate(['/poll', hashId, {editing: true}]);
+    });
+  }
 
-	toggleLoginModal() {
-		this.showLoginModal = true;
-	}
+  toggleLoginModal() {
+    this.showLoginModal = true;
+  }
 
-	logout() {
-		Tools.eraseCookie('jwt');
-		location.reload();
-	}
+  logout() {
+    Tools.eraseCookie('jwt');
+    location.reload();
+  }
 
-	hiddenEvent() {
-		this.showLoginModal = false;
-	}
+  hiddenEvent() {
+    this.showLoginModal = false;
+  }
 
 }

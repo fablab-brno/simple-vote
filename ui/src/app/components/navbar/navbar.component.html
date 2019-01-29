@@ -9,14 +9,9 @@
         <a class="nav-link active" [routerLink]="['/']">Home</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="https://github.com/dessalines/simple-vote" target="_blank" placement="bottom" [tooltip]="version">About</a>
-      </li>
-      <li class="nav-item">
         <button role="button" class="btn btn-outline-primary mx-2"
-           (click)="createPoll()">Create a poll</button>
-      </li>
-      <li class="nav-item">
-        <a role="button" class="nav-link link-unstyled" placement="bottom" tooltip="Donate to the developer" href="https://paypal.me/THoulihan" target="_blank"><small>donate</small></a>
+                (click)="createPoll()">Create a poll
+        </button>
       </li>
     </ul>
     <ul *ngIf="userService.getUser()" class="navbar-nav my-lg-0">
@@ -38,5 +33,7 @@
     </ul>
   </div>
 </nav>
-<app-new-user-modal></app-new-user-modal>
-<app-login-modal *ngIf="showLoginModal" (hideEvent)="hiddenEvent()"></app-login-modal>
+<app-login-modal *ngIf="showLoginModal"
+                 cdkTrapFocus
+                 (hideEvent)="hiddenEvent()">
+</app-login-modal>

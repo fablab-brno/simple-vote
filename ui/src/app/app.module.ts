@@ -3,6 +3,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HttpModule } from '@angular/http';
+import {A11yModule} from '@angular/cdk/a11y';
 
 // 3rd party
 import {
@@ -56,7 +57,7 @@ import {
     BrowserAnimationsModule,
     FormsModule,
     HttpModule,
-
+    A11yModule,
     AppRoutingModule,
 
     // 3rd party libs
